@@ -40,7 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $problem !== '') {
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_POST           => true,
                 CURLOPT_POSTFIELDS     => $payload,
-                CURLOPT_TIMEOUT        => 60,
+                CURLOPT_TIMEOUT        => 120,
+                CURLOPT_CONNECTTIMEOUT => 15,
+                CURLOPT_SSL_VERIFYPEER => true,
                 CURLOPT_HTTPHEADER     => [
                     'Authorization: Bearer ' . $token,
                     'Content-Type: application/json',
