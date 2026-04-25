@@ -1,0 +1,284 @@
+/* ============== ORDER PAGE ============== */
+
+/* Сетка страницы оформления */
+.order-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 24px;
+}
+
+/* Карточки (левая форма и правая сводка) */
+.card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(17, 24, 39, 0.03);
+}
+
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+}
+
+/* -------- УВЕДОМЛЕНИЯ -------- */
+.notice {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.notice-ok {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.notice-err {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+/* -------- ЛЕВЫЙ БЛОК: ФОРМА -------- */
+/* “премиум” оформление формы без ломки вёрстки */
+.order-grid form.card{
+  position: relative;
+  overflow: hidden;
+  padding: 18px 18px 14px;
+  border-radius: 16px;
+  border: 1px solid #e9eef5;
+  background: linear-gradient(180deg,#ffffff 0%, #fbfbff 100%);
+  box-shadow: 0 8px 24px rgba(24,32,56,0.06);
+}
+
+/* декоративная полоска сверху */
+.order-grid form.card::before{
+  content:"";
+  position:absolute; inset:0 0 auto 0; height:6px;
+  background: linear-gradient(90deg,#60a5fa, #34d399, #fbbf24);
+  opacity:.18;
+}
+
+.order-grid form.card h2{
+  margin: 4px 0 12px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing:.2px;
+  color:#0f172a;
+}
+
+/* сетка формы (по умолчанию одна колонка) */
+.order-grid .card form,
+.admin-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+/* лейблы/поля */
+.order-grid form.card label{
+  font-size: 13px;
+  font-weight: 600;
+  color:#475569;
+  margin-top:6px;
+  margin-bottom: 4px;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+  background: #f8fafc;
+  transition: box-shadow .15s ease, border-color .15s ease, background-color .15s ease;
+}
+
+.input:hover{ background:#f5f8fc; }
+
+.input:focus {
+  outline: none;
+  background:#fff;
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, .15);
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 6px;
+}
+
+/* двухколоночная раскладка (опционально, если сделал обёртку .form-two-col) */
+.form-two-col{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 12px;
+}
+.form-field{ display:flex; flex-direction:column; }
+
+/* -------- ПРАВАЯ КОЛОНКА: СВОДКА ЗАКАЗА -------- */
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 6px 0;
+  padding-top: 6px;
+  border-top: 1px dashed #eee;
+}
+
+.summary-total {
+  font-weight: 700;
+  font-size: 18px;
+  color: #111827;
+}
+
+/* Позиции заказа (совместимо с cart.css; чуть дополним) */
+.cart-items { display: grid; gap: 10px; }
+
+.cart-item-card {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 1px 8px rgba(17,24,39,.03);
+}
+
+.cart-item-info { display: grid; gap: 4px; }
+
+.cart-item-name {
+  font-weight: 600;
+  color: #111;
+}
+
+.cart-item-category {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.cart-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cart-item-actions .qty {
+  min-width: 48px;
+  text-align: center;
+  border: 1px dashed #e5e7eb;
+  border-radius: 8px;
+  padding: 4px 8px;
+  color: #374151;
+  background: #fafafa;
+}
+
+.cart-item-price {
+  font-weight: 700;
+  white-space: nowrap;
+  color: #111827;
+}
+
+/* предупреждение по остаткам */
+.stock-warning { color: #b91c1c; font-size: 13px; }
+
+/* -------- КНОПКИ -------- */
+.btn {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 16px;
+  border-radius: 12px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, border-color .12s ease;
+}
+
+.btn:hover { transform: translateY(-1px); }
+
+.btn-ghost {
+  background: #f3f4f6;
+  color: #111;
+  border-color: #e5e7eb;
+}
+
+.btn-ghost:hover {
+  background: #eef2f7;
+  box-shadow: 0 3px 12px rgba(17, 24, 39, 0.08);
+}
+
+.btn-success {
+  background: #16a34a;
+  color: #fff;
+  border-color: #15803d;
+}
+
+.btn-success:hover {
+  background: #15803d;
+  box-shadow: 0 6px 18px rgba(22, 163, 74, 0.25);
+}
+
+/* -------- ПУСТЫЕ СОСТОЯНИЯ -------- */
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  background: #fff;
+  border: 1px dashed #e5e7eb;
+  border-radius: 14px;
+}
+
+.empty-state .empty-icon { font-size: 28px; margin-bottom: 6px; }
+.empty-state .empty-title { font-weight: 700; margin-bottom: 6px; color: #111; }
+.empty-state .empty-text { color: #4b5563; }
+
+/* -------- АДАПТИВ -------- */
+@media (max-width: 900px) {
+  .order-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 680px){
+  .order-grid form.card{ padding:16px 14px 12px; }
+  .order-grid form.card h2{ font-size:20px; }
+  .form-two-col{ grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+  .cart-item-card { grid-template-columns: 1fr; gap: 8px; }
+  .summary-total { font-size: 16px; }
+}
+
+/* -------- СОВМЕСТИМОСТЬ со старым .order-form -------- */
+/* если где-то осталась старая вёрстка — пусть выглядит прилично */
+.order-form {
+  margin: 20px auto;
+  max-width: 480px;
+  text-align: left;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  border:1px solid #e9eef5;
+  box-shadow: 0 8px 24px rgba(24,32,56,0.06);
+}
+.order-form h2 { text-align: center; margin-bottom: 15px; }
+.order-form label { display: block; margin: 10px 0 5px; font-weight:600; color:#475569; }
+.order-form input {
+  width: 100%; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 12px; background:#f8fafc;
+}
+.order-form input:focus { outline:none; background:#fff; border-color:#93c5fd; box-shadow:0 0 0 4px rgba(59,130,246,.15); }
+.order-form button {
+  margin-top: 10px; padding: 11px 16px; background: #16a34a; color: #fff; border: none; border-radius: 12px; cursor: pointer;
+}
+.order-form button:hover { background:#15803d; }

@@ -1,0 +1,80 @@
+.about-page {
+  padding: 24px 0 56px;
+}
+
+/* Заголовок/описание */
+.about-hero {
+  background: linear-gradient(180deg,#ffffff 0%, #fafafa 100%);
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 2px 12px rgba(17,24,39,.03);
+  margin-bottom: 18px;
+}
+.about-hero h1 {
+  margin: 0 0 6px;
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 800;
+  color: #0f172a;
+}
+.about-hero p {
+  margin: 0;
+  color: #374151;
+  line-height: 1.6;
+}
+
+/* Контакты */
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 18px 0 12px;
+  color: #111;
+}
+
+.contacts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+}
+@media (max-width: 700px){
+  .contacts-grid { grid-template-columns: 1fr; }
+}
+.card.contact-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 1px 10px rgba(17,24,39,.03);
+}
+.contact-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #111827;
+}
+.contact-content {
+  color: #374151;
+}
+.contact-content a {
+  color: #2563eb;
+  text-decoration: none;
+}
+.contact-content a:hover { text-decoration: underline; }
+
+/* Карта */
+.map-block {
+  margin-top: 18px;
+}
+.map {
+  width: 100%;
+  height: 420px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 14px rgba(17,24,39,.05);
+  background: #f5f7fb;
+}
+.map-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #6b7280;
+}

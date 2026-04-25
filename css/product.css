@@ -1,0 +1,271 @@
+/* ===============  PRODUCT PAGE  =============== */
+
+.product-page {
+  padding: 24px 0 64px;
+}
+
+/* --------- Breadcrumbs --------- */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 16px;
+}
+.breadcrumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+.breadcrumbs a:hover { text-decoration: underline; }
+.breadcrumbs .current { color: #222; font-weight: 600; }
+
+/* --------- Hero (media + info) --------- */
+.product-hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 28px;
+  align-items: start;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 28px;
+}
+
+/* Заглушка под изображение товара (замени на <img> при необходимости) */
+.product-media {
+  width: 100%;
+  min-height: 360px;
+  border-radius: 12px;
+  border: 1px dashed #d9d9d9;
+  background:
+    linear-gradient(135deg, #f7f7f7 0%, #fafafa 100%);
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.product-media::after {
+  content: "Фото товара";
+  font-size: 14px;
+  color: #9a9a9a;
+}
+
+/* Если используешь <img> внутри .product-media */
+.product-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Информация справа */
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.product-title {
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #111;
+  margin: 0;
+}
+
+.product-meta {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.product-excerpt {
+  margin-top: 2px;
+  color: #333;
+  line-height: 1.55;
+}
+
+/* Блок покупки */
+.product-buy {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.product-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: 0.2px;
+}
+
+.btn.btn-lg {
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* Плюсы/преимущества */
+.product-benefits {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 10px 14px;
+  padding: 0;
+  list-style: none;
+  color: #374151;
+  font-size: 14px;
+}
+.product-benefits li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.product-benefits li::before {
+  content: "✔";
+  font-size: 14px;
+  color: #16a34a; /* зелёная галочка */
+}
+
+/* --------- Доп. панели --------- */
+.product-panels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.product-panels .panel {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 16px;
+}
+.product-panels .panel h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #111;
+}
+.product-panels .panel p {
+  color: #374151;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* --------- Похожие товары --------- */
+.related-products {
+  margin-top: 28px;
+}
+.related-products .section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.related-products .section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+.related-products .link {
+  font-size: 14px;
+  color: #2563eb;
+  text-decoration: none;
+}
+.related-products .link:hover { text-decoration: underline; }
+
+/* Сетка карточек (совместима с твоими карточками каталога) */
+.related-products .products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 16px;
+}
+
+/* Карточка похожего товара (лёгкое переопределение, если нет index.css) */
+.related-products .product-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.related-products .product-card .thumb {
+  height: 140px;
+  background: linear-gradient(135deg, #f7f7f7 0%, #fafafa 100%);
+  border-bottom: 1px solid #f0f0f0;
+}
+.related-products .product-card .info {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.related-products .product-card .title {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+.related-products .product-card .title a {
+  text-decoration: none;
+  color: #111;
+}
+.related-products .product-card .title a:hover { text-decoration: underline; }
+.related-products .product-card .excerpt {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.4;
+  margin: 0;
+}
+.related-products .product-card .bottom {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.related-products .product-card .price {
+  font-weight: 700;
+}
+
+/* --------- Пустые состояния --------- */
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  background: #fff;
+  border: 1px dashed #e5e7eb;
+  border-radius: 14px;
+}
+.empty-state .empty-icon { font-size: 28px; margin-bottom: 6px; }
+.empty-state .empty-title { font-weight: 700; margin-bottom: 6px; color: #111; }
+.empty-state .empty-text { color: #4b5563; }
+
+/* --------- Адаптив --------- */
+@media (max-width: 1024px) {
+  .product-hero {
+    grid-template-columns: 1fr;
+  }
+  .product-media { min-height: 300px; }
+  .product-benefits { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .product-panels { grid-template-columns: 1fr 1fr; }
+  .related-products .products-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+  .product-page { padding-top: 16px; }
+  .product-media { min-height: 220px; }
+  .product-buy { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .product-benefits { grid-template-columns: 1fr; }
+  .product-panels { grid-template-columns: 1fr; }
+  .related-products .products-grid { grid-template-columns: 1fr; }
+}
+
+/* Небольшие анимации/микроинтеракции */
+.btn, .link, .product-card, .panel {
+  transition: all .18s ease-in-out;
+}
+.related-products .product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(17,24,39,0.08);
+}
