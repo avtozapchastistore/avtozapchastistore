@@ -87,6 +87,24 @@ if (isset($_GET['action'], $_GET['id']) && $_GET['action'] === 'delete') {
     unset($_SESSION['cart'][$id]);
 }
 
+// Ручной ввод количества с клавиатуры
+if (isset($_GET['action'], $_GET['id']) && $_GET['action'] === 'set') {
+    $id  = (int)$_GET['id'];
+    $qty = isset($_GET['qty']) ? (int)$_GET['qty'] : 0;
+    if ($qty <= 0) {
+        unset($_SESSION['cart'][$id]);
+    } else {
+        $stock = get_stock($conn, $id);
+        if ($qty > $stock) {
+            $qty = $stock;
+            $_SESSION['cart_notice'][] = "Товар #{$id}: максимальный доступный остаток ({$stock} шт.).";
+        }
+        $_SESSION['cart'][$id] = $qty;
+    }
+    header('Location: cart.php');
+    exit;
+}
+
 $currentCart = $_SESSION['cart'];
 $notices = $_SESSION['cart_notice'];
 // очищаем уведомления, чтобы не повторялись
@@ -107,6 +125,8 @@ $_SESSION['cart_notice'] = [];
         .stock-zero { color: #b91c1c; }    /* нет на складе */
         .cart-notice { margin: 8px 0 0; font-size: 13px; color: #b45309; }
         .cart-alert { padding: 10px 12px; border-radius: 10px; background:#fffbeb; border:1px solid #fde68a; color:#92400e; margin-bottom: 12px; }
+        .qty-input { width: 56px; text-align: center; border: 1px solid #d1d5db; border-radius: 6px; padding: 3px 6px; font-size: 15px; -moz-appearance: textfield; }
+        .qty-input::-webkit-outer-spin-button, .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
 <body>
@@ -177,7 +197,7 @@ $_SESSION['cart_notice'] = [];
 
                 echo "  <div class='cart-item-actions'>";
                 echo "    <a href='cart.php?action=remove&id={$id}' class='qty-btn' aria-label='Убавить'>−</a>";
-                echo "    <span class='qty'>{$quantity}</span>";
+                echo "    <input type='number' class='qty-input' value='{$quantity}' min='1' max='{$stock}' data-id='{$id}' aria-label='Количество'>";
 
                 // Кнопка + активна только если можем добавить
                 if ($stock > $quantity) {
@@ -227,5 +247,18 @@ $_SESSION['cart_notice'] = [];
 </footer>
 
 <?php $conn->close(); ?>
+<script>
+document.querySelectorAll('.qty-input').forEach(function(input) {
+    input.addEventListener('change', function() {
+        var id  = this.dataset.id;
+        var qty = parseInt(this.value, 10);
+        if (isNaN(qty) || qty < 0) qty = 0;
+        window.location.href = 'cart.php?action=set&id=' + id + '&qty=' + qty;
+    });
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { this.blur(); }
+    });
+});
+</script>
 </body>
 </html>

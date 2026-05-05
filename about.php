@@ -17,7 +17,7 @@ require __DIR__ . '/header.php';
     <div class="contacts-grid">
       <div class="card contact-card">
         <div class="contact-title">Адрес</div>
-        <div class="contact-content">г. Москва, ул. Примерная, 10</div>
+        <div class="contact-content">г. Курск, ул. Ленина, 1</div>
       </div>
 
       <div class="card contact-card">
@@ -58,11 +58,11 @@ require __DIR__ . '/header.php';
       setTimeout(() => clearInterval(t), 8000);
     }
     function initMap() {
-      const coords = [55.751244, 37.618423]; // замени на координаты магазина
+      const coords = [51.7404, 36.1883]; // г. Курск, центр города
       const map = new ymaps.Map('yaMap', { center: coords, zoom: 14, controls: ['zoomControl','fullscreenControl'] });
       const placemark = new ymaps.Placemark(coords, {
         balloonContentHeader: 'Магазин автозапчастей',
-        balloonContentBody: 'г. Москва, ул. Примерная, 10<br>Тел.: +7 (999) 000-00-00',
+        balloonContentBody: 'г. Курск, ул. Ленина, 1<br>Тел.: +7 (999) 000-00-00',
         hintContent: 'Мы здесь'
       }, { preset: 'islands#redIcon' });
       map.geoObjects.add(placemark);

@@ -1,10 +1,11 @@
 <?php
 session_start();
+require_once '../config.php';
 if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
     http_response_code(403); exit('Forbidden');
 }
 try {
-    $pdo = new PDO("mysql:host=localhost;dbname=auto_parts_shop;charset=utf8", "root", "root");
+    $pdo = new PDO("mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4", $user, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (Throwable $e) {
     http_response_code(500); exit('DB error');

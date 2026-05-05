@@ -2,14 +2,6 @@
 session_start();
 require_once '../config.php';
 
-try {
-    // Админка на PDO — оставляем так же (при необходимости подставь свои креды)
-    $conn = new mysqli("sql109.infinityfree.com", "if0_40786026", "PWUCFEkDV4uFjW", "if0_40786026_avtozapchastistore");
-} catch (Throwable $e) {
-    error_log("DB connect error: " . $e->getMessage());
-    die("DB connect error: " . $e->getMessage());
-}
-
 if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
     header("Location: login.php"); exit;
 }
@@ -37,10 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($action === 'accept') {
                 $stmt = $conn->prepare("UPDATE orders SET status = 'accepted' WHERE id = ?");
-                $stmt->execute([$order_id]);
+                $stmt->bind_param('i', $order_id);
+                $stmt->execute();
             } elseif ($action === 'delete') {
                 $stmt = $conn->prepare("DELETE FROM orders WHERE id = ?");
-                $stmt->execute([$order_id]);
+                $stmt->bind_param('i', $order_id);
+                $stmt->execute();
             }
         }
 
@@ -53,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if     ($action === 'approve') { $stmt = $conn->prepare("UPDATE reviews SET is_approved = 1 WHERE id = ?"); }
             elseif ($action === 'hide')    { $stmt = $conn->prepare("UPDATE reviews SET is_approved = 0 WHERE id = ?"); }
             elseif ($action === 'delete')  { $stmt = $conn->prepare("DELETE FROM reviews WHERE id = ?"); }
-            if (isset($stmt)) $stmt->execute([$review_id]);
+            if (isset($stmt)) { $stmt->bind_param('i', $review_id); $stmt->execute(); }
         }
 
         // ----- НОВОСТИ -----
@@ -64,7 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($action === 'delete') {
                 $stmt = $conn->prepare("DELETE FROM news WHERE id = ?");
-                $stmt->execute([$news_id]);
+                $stmt->bind_param('i', $news_id);
+                $stmt->execute();
             }
         }
 
@@ -75,12 +70,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($category_id <= 0) throw new Exception("Недействительный ID категории.");
 
             if ($action === 'delete') {
-                // Попытаемся удалить; если есть товары — БД может запретить (FK),
-                // тогда ловим ошибку и показываем сообщение.
-                try {
-                    $stmt = $conn->prepare("DELETE FROM categories WHERE id = ?");
-                    $stmt->execute([$category_id]);
-                } catch (Throwable $e) {
+                $stmt = $conn->prepare("DELETE FROM categories WHERE id = ?");
+                $stmt->bind_param('i', $category_id);
+                if (!$stmt->execute()) {
                     $_SESSION['flash_error'] = "Невозможно удалить категорию #{$category_id}: вероятно, в ней есть товары.";
                 }
             }
@@ -146,8 +138,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <tr><th>ID</th><th>Название</th><th>Категория</th><th>Цена</th><th>Остаток</th><th>Действия</th></tr>
         <?php
         $stmt = $conn->query("SELECT p.*, c.name AS category_name FROM products p JOIN categories c ON p.category_id = c.id ORDER BY p.id DESC");
-        if ($stmt->rowCount() > 0) {
-          while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        if ($stmt && $stmt->num_rows > 0) {
+          while ($row = $stmt->fetch_assoc()) {
             $stock = isset($row['stock']) ? (int)$row['stock'] : 0;
             echo "<tr>
                     <td>{$row['id']}</td>
@@ -177,8 +169,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <tr><th>ID</th><th>Название</th><th>Действия</th></tr>
         <?php
         $stmt = $conn->query("SELECT id, name FROM categories ORDER BY name ASC");
-        if ($stmt->rowCount() > 0) {
-          while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        if ($stmt && $stmt->num_rows > 0) {
+          while ($row = $stmt->fetch_assoc()) {
             $id = (int)$row['id'];
             $name = htmlspecialchars($row['name']);
             echo "<tr>
@@ -215,8 +207,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <tr><th>ID</th><th>Заголовок</th><th>Дата</th><th>Действия</th></tr>
         <?php
         $stmt = $conn->query("SELECT * FROM news ORDER BY created_at DESC");
-        if ($stmt->rowCount() > 0) {
-          while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        if ($stmt && $stmt->num_rows > 0) {
+          while ($row = $stmt->fetch_assoc()) {
             $id = (int)$row['id'];
             $title = htmlspecialchars($row['title']);
             $date = date("d.m.Y H:i", strtotime($row['created_at']));
@@ -254,8 +246,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <tr><th>ID</th><th>Клиент</th><th>Адрес</th><th>Телефон</th><th>Цена</th><th>Позиции заказа</th><th>Статус</th><th>Действия</th></tr>
         <?php
         $stmt = $conn->query("SELECT id, customer_name, customer_address, phone, total, products, status, created_at FROM orders ORDER BY created_at DESC");
-        if ($stmt->rowCount() > 0) {
-          while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        if ($stmt && $stmt->num_rows > 0) {
+          while ($row = $stmt->fetch_assoc()) {
             $products = json_decode($row['products'], true);
             $product_list = '';
             if (is_array($products)) {
@@ -264,8 +256,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $quantity = (int)($product['quantity'] ?? 0);
                 if ($prod_id > 0) {
                   $prod_stmt = $conn->prepare("SELECT name FROM products WHERE id = ?");
-                  $prod_stmt->execute([$prod_id]);
-                  $prod_row = $prod_stmt->fetch(PDO::FETCH_ASSOC);
+                  $prod_stmt->bind_param('i', $prod_id);
+                  $prod_stmt->execute();
+                  $prod_res = $prod_stmt->get_result();
+                  $prod_row = $prod_res->fetch_assoc();
                   if ($prod_row) {
                     $product_list .= htmlspecialchars($prod_row['name']) . " ({$quantity} шт.), ";
                   }
@@ -315,8 +309,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h2>Управление отзывами</h2>
     <div class="content">
       <?php
-      $pendingCount  = (int)$conn->query("SELECT COUNT(*) FROM reviews WHERE is_approved = 0")->fetchColumn();
-      $approvedCount = (int)$conn->query("SELECT COUNT(*) FROM reviews WHERE is_approved = 1")->fetchColumn();
+      $r = $conn->query("SELECT COUNT(*) AS cnt FROM reviews WHERE is_approved = 0");
+      $pendingCount  = $r ? (int)$r->fetch_assoc()['cnt'] : 0;
+      $r = $conn->query("SELECT COUNT(*) AS cnt FROM reviews WHERE is_approved = 1");
+      $approvedCount = $r ? (int)$r->fetch_assoc()['cnt'] : 0;
       ?>
       <p class="muted">
         Ожидают модерации: <span class="pill pill-orange"><?php echo $pendingCount; ?></span>
@@ -341,8 +337,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           ORDER BY is_approved ASC, created_at DESC
           LIMIT 200
         ");
-        if ($stmt->rowCount() > 0) {
-          while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        if ($stmt && $stmt->num_rows > 0) {
+          while ($r = $stmt->fetch_assoc()) {
             $id = (int)$r['id'];
             $name = htmlspecialchars($r['name']);
             $rating = max(1, min(5, (int)$r['rating']));

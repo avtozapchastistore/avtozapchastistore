@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../config.php';
 
 if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
     header("Location: login.php");
@@ -7,7 +8,7 @@ if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
 }
 
 try {
-    $pdo = new PDO("mysql:host=localhost;dbname=auto_parts_shop;charset=utf8", "root", "root");
+    $pdo = new PDO("mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4", $user, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (Throwable $e) {
     die("Ошибка подключения к БД");
