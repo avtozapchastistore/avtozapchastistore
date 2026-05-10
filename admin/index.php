@@ -271,51 +271,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <table>
         <tr><th>ID</th><th>Клиент</th><th>Адрес</th><th>Телефон</th><th>Цена</th><th>Позиции заказа</th><th>Статус</th><th>Действия</th></tr>
         <?php
-        $stmt = $conn->query("SELECT id, customer_name, customer_address, phone, total, products, status, created_at FROM orders ORDER BY created_at DESC");
+        $stmt = $conn->query("SELECT id, customer_name, customer_address, phone, total, products, status, created_at FROM orders ORDER BY created_at DESC LIMIT 100");
         if ($stmt && $stmt->num_rows > 0) {
           while ($row = $stmt->fetch_assoc()) {
             $products = json_decode($row['products'], true);
             $product_list = '';
             if (is_array($products)) {
-              foreach ($products as $product) {
-                $prod_id = (int)($product['id'] ?? 0);
-                $quantity = (int)($product['quantity'] ?? 0);
-                if ($prod_id > 0) {
-                  $prod_stmt = $conn->prepare("SELECT name FROM products WHERE id = ?");
-                  $prod_stmt->bind_param('i', $prod_id);
-                  $prod_stmt->execute();
-                  $prod_res = $prod_stmt->get_result();
-                  $prod_row = $prod_res->fetch_assoc();
-                  if ($prod_row) {
-                    $product_list .= htmlspecialchars($prod_row['name']) . " ({$quantity} шт.), ";
+              $ids = array_column($products, 'id');
+              $qtyMap = [];
+              foreach ($products as $p) { $qtyMap[$p['id']] = $p['quantity'] ?? 0; }
+              if ($ids) {
+                $ids = array_filter(array_map('intval', $ids));
+                if ($ids) {
+                  $in = implode(',', $ids);
+                  $prod_stmt = $conn->query("SELECT id, name FROM products WHERE id IN ($in)");
+                  if ($prod_stmt) {
+                    while ($pr = $prod_stmt->fetch_assoc()) {
+                      $q = $qtyMap[$pr['id']] ?? 0;
+                      $product_list .= htmlspecialchars($pr['name']) . " ({$q} шт.), ";
+                    }
                   }
                 }
               }
-              $product_list = rtrim($product_list, ', ');
+              $product_list = $product_list ? rtrim($product_list, ', ') : 'Нет данных';
             } else {
               $product_list = 'Нет данных';
             }
 
             $statusRu = $row['status'] === 'accepted' ? 'Принят' : ($row['status'] === 'cancelled' ? 'Отменён' : 'Ожидает');
+            $id = (int)$row['id'];
+            $csrfAttr = htmlspecialchars($csrf);
+            $custName = htmlspecialchars($row['customer_name']);
+            $custAddr = htmlspecialchars($row['customer_address']);
+            $phone = htmlspecialchars($row['phone']);
+            $isAccepted = $row['status'] === 'accepted' ? 'disabled' : '';
             echo "<tr>
-                    <td>{$row['id']}</td>
-                    <td>" . htmlspecialchars($row['customer_name']) . "</td>
-                    <td>" . htmlspecialchars($row['customer_address']) . "</td>
-                    <td>" . htmlspecialchars($row['phone']) . "</td>
+                    <td>{$id}</td>
+                    <td>{$custName}</td>
+                    <td>{$custAddr}</td>
+                    <td>{$phone}</td>
                     <td>{$row['total']} руб.</td>
-                    <td>$product_list</td>
+                    <td>{$product_list}</td>
                     <td>{$statusRu}</td>
                     <td class='nowrap'>
-                      <a href='edit_order.php?id={$row['id']}' class='btn btn-ghost'>Редактировать</a>
+                      <a href='edit_order.php?id={$id}' class='btn btn-ghost'>Редактировать</a>
                       <form method='POST' action='index.php' style='display:inline;'>
-                        <input type='hidden' name='order_id' value='{$row['id']}'>
-                        <input type='hidden' name='csrf_token' value='{$csrf}'>
+                        <input type='hidden' name='order_id' value='{$id}'>
+                        <input type='hidden' name='csrf_token' value='{$csrfAttr}'>
                         <input type='hidden' name='action' value='accept'>
-                        <button type='submit' class='btn btn-primary' " . ($row['status'] === 'accepted' ? 'disabled' : '') . ">Принять</button>
+                        <button type='submit' class='btn btn-primary' {$isAccepted}>Принять</button>
                       </form>
-                      <form method='POST' action='index.php' style='display:inline;' onsubmit=\"return confirm('Удалить заказ #{$row['id']}?');\">
-                        <input type='hidden' name='order_id' value='{$row['id']}'>
-                        <input type='hidden' name='csrf_token' value='{$csrf}'>
+                      <form method='POST' action='index.php' style='display:inline;' onsubmit=\"return confirm('Удалить заказ #{$id}?')\">
+                        <input type='hidden' name='order_id' value='{$id}'>
+                        <input type='hidden' name='csrf_token' value='{$csrfAttr}'>
                         <input type='hidden' name='action' value='delete'>
                         <button type='submit' class='btn btn-danger'>Удалить</button>
                       </form>
