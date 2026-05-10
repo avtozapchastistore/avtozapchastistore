@@ -3,15 +3,13 @@ session_start();
 require_once __DIR__ . '/config.php';
 
 $pageTitle = 'Магазин автозапчастей';
-$extraCss   = ['css/about.css'];            // опционально: стили страницы
+$extraCss = ['css/index.css'];
 require __DIR__ . '/header.php';
-
 
 // Текущие фильтры
 $currentCategory = isset($_GET['category']) ? (int)$_GET['category'] : 0;
-$currentSearch   = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
+$currentSearch = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
 
-// Безопасный запрос: не валим страницу, если SQL упал (например, таблицы нет)
 function safe_query(mysqli $conn, string $sql) {
   try {
     return $conn->query($sql);
@@ -21,47 +19,42 @@ function safe_query(mysqli $conn, string $sql) {
   }
 }
 ?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Магазин автозапчастей</title>
 
-<section class="search-bar">
-  <div class="container">
-    <form method="GET" action="index.php" class="search-form">
-      <input type="text" name="search" class="input" placeholder="Поиск запчастей..." value="<?php echo $currentSearch; ?>" />
-      <button type="submit" class="btn btn-primary">Найти</button>
-      <?php if (!empty($currentSearch) || $currentCategory): ?>
-        <a href="index.php" class="btn btn-ghost">Сбросить</a>
-      <?php endif; ?>
-    </form>
-  </div>
-</section>
-
-<section class="categories">
-  <div class="container">
-    <h2 class="section-title">Категории</h2>
-    <div class="chips">
-      <a href="index.php" class="chip <?php echo $currentCategory===0 ? 'active' : ''; ?>">Все</a>
-      <?php
-      $sqlCats = "SELECT * FROM categories";
-      $result = safe_query($conn, $sqlCats);
-      if ($result && $result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-          $active = $currentCategory === (int)$row['id'] ? 'active' : '';
-          echo "<a class='chip $active' href='index.php?category={$row['id']}'>".htmlspecialchars($row['name'])."</a>";
-        }
-      }
-      ?>
+<main>
+  <section class="search-bar">
+    <div class="container">
+      <form method="GET" action="index.php" class="search-form">
+        <input type="text" name="search" class="input" placeholder="Поиск запчастей..." value="<?php echo $currentSearch; ?>" />
+        <button type="submit" class="btn btn-primary">Найти</button>
+        <?php if (!empty($currentSearch) || $currentCategory): ?>
+          <a href="index.php" class="btn btn-ghost">Сбросить</a>
+        <?php endif; ?>
+      </form>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="products">
-  <div class="container products-grid">
-    <?php
+  <section class="categories">
+    <div class="container">
+      <h2 class="section-title">Категории</h2>
+      <div class="chips">
+        <a href="index.php" class="chip <?php echo $currentCategory === 0 ? 'active' : ''; ?>">Все</a>
+        <?php
+        $sqlCats = "SELECT * FROM categories";
+        $result = safe_query($conn, $sqlCats);
+        if ($result && $result->num_rows > 0) {
+          while ($row = $result->fetch_assoc()) {
+            $active = $currentCategory === (int)$row['id'] ? 'active' : '';
+            echo "<a class='chip $active' href='index.php?category={$row['id']}'>" . htmlspecialchars($row['name']) . "</a>";
+          }
+        }
+        ?>
+      </div>
+    </div>
+  </section>
+
+  <section class="products">
+    <div class="container products-grid">
+      <?php
       $where = "";
       if ($currentCategory) {
         $where .= " WHERE p.category_id = " . (int)$currentCategory;
@@ -79,7 +72,6 @@ function safe_query(mysqli $conn, string $sql) {
       if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
           $price = number_format((float)$row['price'], 0, ',', ' ');
-          // короткое описание (если заполнено в БД)
           $excerpt = '';
           if (!empty($row['short_description'])) {
             if (function_exists('mb_strimwidth')) {
@@ -91,17 +83,17 @@ function safe_query(mysqli $conn, string $sql) {
 
           echo "<article class='product-card'>
                   <div class='thumb' aria-hidden='true'>";
-            if (!empty($row['image'])) {
-                echo "<img src='uploads/products/".htmlspecialchars($row['image'])."' alt='".htmlspecialchars($row['name'])."'>";
-            }
-            echo "</div>
+          if (!empty($row['image'])) {
+            echo "<img src='uploads/products/" . htmlspecialchars($row['image']) . "' alt='" . htmlspecialchars($row['name']) . "'>";
+          }
+          echo "</div>
                   <div class='info'>
-                    <h3 class='title'><a href='product.php?id={$row['id']}'>".htmlspecialchars($row['name'])."</a></h3>
-                    <div class='meta'>Категория: ".htmlspecialchars($row['category_name'])."</div>";
+                    <h3 class='title'><a href='product.php?id={$row['id']}'>" . htmlspecialchars($row['name']) . "</a></h3>
+                    <div class='meta'>Категория: " . htmlspecialchars($row['category_name']) . "</div>";
           if ($excerpt) {
             echo "<p class='excerpt'>{$excerpt}</p>";
           }
-          echo "    <div class='bottom'>
+          echo "<div class='bottom'>
                       <div class='price'>{$price} ₽</div>
                       <a class='btn btn-success' href='cart.php?action=add&id={$row['id']}'>В корзину</a>
                     </div>
@@ -115,21 +107,19 @@ function safe_query(mysqli $conn, string $sql) {
                 <div class='empty-text'>Попробуйте изменить запрос или выбрать другую категорию.</div>
               </div>";
       }
-    ?>
-  </div>
-</section>
-
-<!-- ========== ОТЗЫВЫ КЛИЕНТОВ ========== -->
-<section class="reviews">
-  <div class="container">
-    <div class="section-head">
-      <h2 class="section-title">Отзывы клиентов</h2>
-      <!-- Якорь: откроет модалку даже без JS -->
-      <a href="#reviewModalBackdrop" class="btn btn-primary" id="openReviewModal">Оставить отзыв</a>
+      ?>
     </div>
+  </section>
 
-    <div class="reviews-grid">
-      <?php
+  <section class="reviews">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Отзывы клиентов</h2>
+        <a href="#reviewModalBackdrop" class="btn btn-primary" id="openReviewModal">Оставить отзыв</a>
+      </div>
+
+      <div class="reviews-grid">
+        <?php
         $revSql = "SELECT name, rating, message, created_at
                    FROM reviews
                    WHERE is_approved = 1
@@ -158,50 +148,11 @@ function safe_query(mysqli $conn, string $sql) {
                   <div class='empty-text'>Будьте первым! Нажмите «Оставить отзыв».</div>
                 </div>";
         }
-      ?>
+        ?>
+      </div>
     </div>
-  </div>
-</section>
-<!-- ========== /ОТЗЫВЫ КЛИЕНТОВ ========== -->
+  </section>
 
-<footer class="site-footer">
-  <div class="container">
-    © <?php echo date("Y"); ?> Магазин автозапчастей
-  </div>
-</footer>
-
-<?php if (isset($conn) && $conn instanceof mysqli) { $conn->close(); } ?>
-
-<!-- Стили отзывов + модалки и краткого описания -->
-<style>
-.reviews { padding: 48px 0; background: #fafafa; }
-.reviews .section-head { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px; }
-.reviews-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
-.review-card { background:#fff; border:1px solid #eee; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:8px; }
-.review-name { font-weight:600; }
-.review-text { color:#333; line-height:1.45; }
-.review-meta { font-size:12px; color:#777; }
-.stars { font-size:14px; letter-spacing:1px; color:#f5a623; }
-.product-card .excerpt{margin:.25rem 0 .5rem;color:#444;line-height:1.35}
-.modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.4); display:none; align-items:center; justify-content:center; padding:16px; z-index:1000; }
-.modal-backdrop:target { display:flex; }
-.modal-backdrop.active { display:flex; }
-.modal-backdrop:not(:target) { display:none !important; }
-.modal { width:100%; max-width:520px; background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.2); }
-.modal-header { padding:16px 20px; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between; }
-.modal-title { font-weight:700; }
-.modal-close { border:none; background:transparent; font-size:22px; line-height:1; cursor:pointer; text-decoration:none; }
-.modal-body { padding:20px; display:flex; flex-direction:column; gap:12px; }
-.modal-footer { padding:16px 20px; border-top:1px solid #eee; display:flex; gap:8px; justify-content:flex-end; }
-.input, .textarea, .select { width:100%; border:1px solid #ddd; border-radius:10px; padding:10px 12px; font:inherit; }
-.textarea { min-height:110px; resize:vertical; }
-.btn-secondary { background:#f2f2f2; border:1px solid #e5e5e5; color:#333; border-radius:10px; padding:10px 14px; }
-.alert { padding:10px 12px; border-radius:10px; font-size:14px; }
-.alert-success { background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; }
-.alert-error { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }
-</style>
-
-<!-- МОДАЛКА -->
 <div class="modal-backdrop" id="reviewModalBackdrop" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
     <div class="modal-header">
@@ -237,14 +188,13 @@ function safe_query(mysqli $conn, string $sql) {
   </div>
 </div>
 
-<!-- JS -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  const backdrop  = document.getElementById('reviewModalBackdrop');
-  const closeBtn  = document.getElementById('closeReviewModal');
+  const backdrop = document.getElementById('reviewModalBackdrop');
+  const closeBtn = document.getElementById('closeReviewModal');
   const cancelBtn = document.getElementById('cancelReview');
-  const form      = document.getElementById('reviewForm');
-  const alertBox  = document.getElementById('reviewAlert');
+  const form = document.getElementById('reviewForm');
+  const alertBox = document.getElementById('reviewAlert');
 
   function closeModal() {
     if (backdrop) {
@@ -267,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  if (closeBtn)  closeBtn.addEventListener('click',  (e) => { e.preventDefault(); closeModal(); });
+  if (closeBtn) closeBtn.addEventListener('click', (e) => { e.preventDefault(); closeModal(); });
   if (cancelBtn) cancelBtn.addEventListener('click', (e) => { e.preventDefault(); closeModal(); });
   if (backdrop) backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
@@ -278,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (alertBox) alertBox.style.display = 'none';
 
       try {
-        const res  = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+        const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
         const data = await res.json();
 
         if (data.ok) {
@@ -308,5 +258,4 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-</body>
-</html>
+<?php require __DIR__ . '/footer.php'; ?>

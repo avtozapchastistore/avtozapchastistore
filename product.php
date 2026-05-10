@@ -8,7 +8,6 @@ if (!isset($_GET['id'])) {
 }
 $id = (int)$_GET['id'];
 
-// Получаем товар
 $stmt = $conn->prepare("
     SELECT p.id, p.name, p.price, p.short_description, p.category_id, p.image,
            c.name AS category_name
@@ -23,16 +22,10 @@ $res = $stmt->get_result();
 $product = $res->num_rows ? $res->fetch_assoc() : null;
 $stmt->close();
 
-// Заголовки/мета
-$title = $product ? $product['name'] . ' — Магазин автозапчастей' : 'Товар не найден — Магазин автозапчастей';
-$desc  = $product && !empty($product['short_description'])
-        ? mb_substr(trim($product['short_description']), 0, 150)
-        : 'Запчасти, аксессуары и расходники — магазин автозапчастей.';
+$pageTitle = $product ? $product['name'] . ' — Магазин автозапчастей' : 'Товар не найден — Магазин автозапчастей';
+$extraCss = ['css/product.css'];
+require __DIR__ . '/header.php';
 
-// Для JSON-LD
-$priceFormatted = $product ? number_format((float)$product['price'], 2, '.', '') : null;
-
-// Похожие товары (та же категория, исключая текущий)
 $related = [];
 if ($product) {
     $rel = $conn->prepare("
@@ -49,25 +42,11 @@ if ($product) {
     $rel->close();
 }
 ?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?php echo htmlspecialchars($title); ?></title>
-  <meta name="description" content="<?php echo htmlspecialchars($desc); ?>">
 
-  <!-- Open Graph -->
-  <meta property="og:type" content="product">
-  <meta property="og:title" content="<?php echo htmlspecialchars($product ? $product['name'] : 'Товар не найден'); ?>">
-  <meta property="og:description" content="<?php echo htmlspecialchars($desc); ?>">
-  <meta property="og:url" content="<?php echo htmlspecialchars((isset($_SERVER['REQUEST_SCHEME'])?$_SERVER['REQUEST_SCHEME']:'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']); ?>">
-
-  <main class="product-page">
+<main class="product-page">
   <div class="container">
 
     <?php if ($product): ?>
-      <!-- Хлебные крошки -->
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
         <a href="index.php">Главная</a>
         <span aria-hidden="true">›</span>
@@ -78,7 +57,6 @@ if ($product) {
         <span class="current"><?php echo htmlspecialchars($product['name']); ?></span>
       </nav>
 
-      <!-- Hero блок -->
       <section class="product-hero">
         <div class="product-media" aria-hidden="true">
           <?php if (!empty($product['image'])): ?>
@@ -115,7 +93,6 @@ if ($product) {
         </div>
       </section>
 
-      <!-- Дополнительные блоки -->
       <section class="product-panels">
         <div class="panel">
           <h3>Совместимость</h3>
@@ -170,7 +147,6 @@ if ($product) {
       </section>
       <?php endif; ?>
 
-      <!-- JSON-LD (структурированные данные товара) -->
       <script type="application/ld+json">
       {
         "@context": "https://schema.org/",
@@ -180,14 +156,12 @@ if ($product) {
         "offers": {
           "@type": "Offer",
           "priceCurrency": "RUB",
-          "price": <?php echo json_encode($priceFormatted); ?>,
-          "url": <?php echo json_encode((isset($_SERVER['REQUEST_SCHEME'])?$_SERVER['REQUEST_SCHEME']:'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']); ?>
+          "price": <?php echo json_encode(number_format((float)$product['price'], 2, '.', '')); ?>
         }
       }
       </script>
 
     <?php else: ?>
-      <!-- Товар не найден -->
       <section class="not-found">
         <div class="empty-state">
           <div class="empty-icon">🔧</div>
@@ -202,20 +176,4 @@ if ($product) {
   </div>
 </main>
 
-<footer class="site-footer">
-  <div class="container">
-    © <?php echo date("Y"); ?> Магазин автозапчастей
-  </div>
-</footer>
-
-</main>
-
-<footer class="site-footer">
-  <div class="container">
-    © <?php echo date("Y"); ?> Магазин автозапчастей
-  </div>
-</footer>
-
-</body>
-</html>
-<?php $conn->close(); ?>
+<?php require __DIR__ . '/footer.php'; ?>
