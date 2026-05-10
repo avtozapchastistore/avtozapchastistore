@@ -2,7 +2,7 @@
 session_start();
 require_once __DIR__ . '/config.php';
 
-$pageTitle = 'Название страницы';           // опционально
+$pageTitle = 'Магазин автозапчастей';
 $extraCss   = ['css/about.css'];            // опционально: стили страницы
 require __DIR__ . '/header.php';
 
@@ -27,50 +27,6 @@ function safe_query(mysqli $conn, string $sql) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Магазин автозапчастей</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-
-  <link rel="stylesheet" href="css/common.css" />
-  <link rel="stylesheet" href="css/index.css" />
-
-  <!-- Стили отзывов + модалки и краткого описания -->
-  <style>
-    .reviews { padding: 48px 0; background: #fafafa; }
-    .reviews .section-head { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px; }
-    .reviews-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
-    .review-card { background:#fff; border:1px solid #eee; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:8px; }
-    .review-name { font-weight:600; }
-    .review-text { color:#333; line-height:1.45; }
-    .review-meta { font-size:12px; color:#777; }
-    .stars { font-size:14px; letter-spacing:1px; color:#f5a623; }
-
-    /* краткое описание в карточках каталога */
-    .product-card .excerpt{margin:.25rem 0 .5rem;color:#444;line-height:1.35}
-
-    /* Modal */
-    .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.4); display:none; align-items:center; justify-content:center; padding:16px; z-index:1000; }
-    .modal-backdrop:target { display:flex; }                 /* открытие по якорю (без JS) */
-    .modal-backdrop.active { display:flex; }                 /* если JS добавит класс */
-    .modal-backdrop:not(:target) { display:none !important; }/* закрывать всегда, если нет якоря */
-    .modal { width:100%; max-width:520px; background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.2); }
-    .modal-header { padding:16px 20px; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between; }
-    .modal-title { font-weight:700; }
-    .modal-close { border:none; background:transparent; font-size:22px; line-height:1; cursor:pointer; text-decoration:none; }
-    .modal-body { padding:20px; display:flex; flex-direction:column; gap:12px; }
-    .modal-footer { padding:16px 20px; border-top:1px solid #eee; display:flex; gap:8px; justify-content:flex-end; }
-    .input, .textarea, .select { width:100%; border:1px solid #ddd; border-radius:10px; padding:10px 12px; font:inherit; }
-    .textarea { min-height:110px; resize:vertical; }
-    .btn { cursor:pointer; }
-    .btn-secondary { background:#f2f2f2; border:1px solid #e5e5e5; color:#333; border-radius:10px; padding:10px 14px; }
-    .alert { padding:10px 12px; border-radius:10px; font-size:14px; }
-    .alert-success { background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; }
-    .alert-error { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }
-  </style>
-</head>
-<body>
-
 
 <section class="search-bar">
   <div class="container">
@@ -216,12 +172,40 @@ function safe_query(mysqli $conn, string $sql) {
 
 <?php if (isset($conn) && $conn instanceof mysqli) { $conn->close(); } ?>
 
+<!-- Стили отзывов + модалки и краткого описания -->
+<style>
+.reviews { padding: 48px 0; background: #fafafa; }
+.reviews .section-head { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px; }
+.reviews-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
+.review-card { background:#fff; border:1px solid #eee; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:8px; }
+.review-name { font-weight:600; }
+.review-text { color:#333; line-height:1.45; }
+.review-meta { font-size:12px; color:#777; }
+.stars { font-size:14px; letter-spacing:1px; color:#f5a623; }
+.product-card .excerpt{margin:.25rem 0 .5rem;color:#444;line-height:1.35}
+.modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.4); display:none; align-items:center; justify-content:center; padding:16px; z-index:1000; }
+.modal-backdrop:target { display:flex; }
+.modal-backdrop.active { display:flex; }
+.modal-backdrop:not(:target) { display:none !important; }
+.modal { width:100%; max-width:520px; background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.2); }
+.modal-header { padding:16px 20px; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between; }
+.modal-title { font-weight:700; }
+.modal-close { border:none; background:transparent; font-size:22px; line-height:1; cursor:pointer; text-decoration:none; }
+.modal-body { padding:20px; display:flex; flex-direction:column; gap:12px; }
+.modal-footer { padding:16px 20px; border-top:1px solid #eee; display:flex; gap:8px; justify-content:flex-end; }
+.input, .textarea, .select { width:100%; border:1px solid #ddd; border-radius:10px; padding:10px 12px; font:inherit; }
+.textarea { min-height:110px; resize:vertical; }
+.btn-secondary { background:#f2f2f2; border:1px solid #e5e5e5; color:#333; border-radius:10px; padding:10px 14px; }
+.alert { padding:10px 12px; border-radius:10px; font-size:14px; }
+.alert-success { background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; }
+.alert-error { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }
+</style>
+
 <!-- МОДАЛКА -->
 <div class="modal-backdrop" id="reviewModalBackdrop" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
     <div class="modal-header">
       <div class="modal-title" id="reviewModalTitle">Оставить отзыв</div>
-      <!-- Ссылка на # (снимет якорь => закроет окно без JS) -->
       <a href="#" class="modal-close" id="closeReviewModal" aria-label="Закрыть">×</a>
     </div>
     <form id="reviewForm" class="modal-body" method="post" action="reviews_submit.php" novalidate>
@@ -263,20 +247,17 @@ document.addEventListener('DOMContentLoaded', function () {
   const alertBox  = document.getElementById('reviewAlert');
 
   function closeModal() {
-    // убираем JS-признаки открытия
     if (backdrop) {
       backdrop.classList.remove('active');
       backdrop.setAttribute('aria-hidden', 'true');
     }
     if (alertBox) alertBox.style.display = 'none';
 
-    // надёжно сбрасываем :target
     if (location.hash === '#reviewModalBackdrop') {
       try {
-        location.hash = '#_'; // переключаемся на пустую цель => :target снимается
-        history.replaceState(null, '', location.pathname + location.search); // чистим URL
+        location.hash = '#_';
+        history.replaceState(null, '', location.pathname + location.search);
       } catch (e) {
-        // Фолбэк: временно убираем id
         if (backdrop) {
           const oldId = backdrop.id;
           backdrop.removeAttribute('id');
@@ -286,17 +267,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Клики закрытия
   if (closeBtn)  closeBtn.addEventListener('click',  (e) => { e.preventDefault(); closeModal(); });
   if (cancelBtn) cancelBtn.addEventListener('click', (e) => { e.preventDefault(); closeModal(); });
-
-  // Клик по фону
   if (backdrop) backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
-
-  // ESC
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-  // Отправка формы (AJAX)
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();

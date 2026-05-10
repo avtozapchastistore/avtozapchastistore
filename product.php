@@ -63,27 +63,7 @@ if ($product) {
   <meta property="og:description" content="<?php echo htmlspecialchars($desc); ?>">
   <meta property="og:url" content="<?php echo htmlspecialchars((isset($_SERVER['REQUEST_SCHEME'])?$_SERVER['REQUEST_SCHEME']:'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']); ?>">
 
-  <link rel="stylesheet" href="css/common.css">
-  <link rel="stylesheet" href="css/product.css"> <!-- Твой отдельный CSS для карточки товара -->
-</head>
-<body>
-
-<header class="site-header">
-  <div class="container header-row">
-    <a class="brand" href="index.php">
-      <span class="brand-icon" aria-hidden="true">⚙️</span>
-      <span class="brand-name">Магазин автозапчастей</span>
-    </a>
-    <nav class="main-nav">
-      <a href="index.php" class="nav-link">Главная</a>
-      <a href="cart.php" class="nav-link">Корзина</a>
-      <a href="news.php" class="nav-link">Новости</a>
-      <a href="admin/index.php" class="nav-link nav-link--ghost">Админ-панель</a>
-    </nav>
-  </div>
-</header>
-
-<main class="product-page">
+  <main class="product-page">
   <div class="container">
 
     <?php if ($product): ?>
@@ -220,6 +200,14 @@ if ($product) {
     <?php endif; ?>
 
   </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    © <?php echo date("Y"); ?> Магазин автозапчастей
+  </div>
+</footer>
+
 </main>
 
 <footer class="site-footer">
