@@ -20,7 +20,7 @@ if ($id <= 0) { header("Location: index.php"); exit; }
 
 // Товар
 $product = null;
-$stmt = $conn->prepare("SELECT id, name, category_id, price, short_description, stock FROM products WHERE id = ?");
+$stmt = $conn->prepare("SELECT id, name, category_id, price, short_description, stock, image FROM products WHERE id = ?");
 $stmt->bind_param('i', $id);
 $stmt->execute();
 $res = $stmt->get_result();
@@ -48,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $price = (float)($_POST['price'] ?? 0);
         $short = trim($_POST['short_description'] ?? '');
         $stock = (int)($_POST['stock'] ?? 0);
+        $image = trim($_POST['image'] ?? '');
 
         if ($name === '' || mb_strlen($name) > 255) $errors[] = "Введите корректное название (до 255 символов).";
         if ($catId <= 0) $errors[] = "Выберите категорию.";
@@ -56,8 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stock < 0) $errors[] = "Остаток не может быть отрицательным.";
 
         if (!$errors) {
-            $stmt = $conn->prepare("UPDATE products SET name = ?, category_id = ?, price = ?, short_description = ?, stock = ? WHERE id = ?");
-            $stmt->bind_param('sidsii', $name, $catId, $price, $short, $stock, $id);
+            $stmt = $conn->prepare("UPDATE products SET name = ?, category_id = ?, price = ?, short_description = ?, stock = ?, image = ? WHERE id = ?");
+            $stmt->bind_param('sidsisi', $name, $catId, $price, $short, $stock, $image, $id);
             if ($stmt->execute()) {
                 $ok_msg = "Изменения сохранены.";
                 // обновим локально
@@ -157,6 +158,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label>Остаток на складе (шт.)</label>
             <input type="number" name="stock" class="input" step="1" min="0"
                    value="<?php echo htmlspecialchars((string)$product['stock']); ?>">
+
+            <label>Изображение (URL или имя файла)</label>
+            <input type="text" name="image" class="input" placeholder="Например: product1.jpg"
+                   value="<?php echo htmlspecialchars($product['image'] ?? ''); ?>">
 
             <div class="form-buttons">
                 <button type="submit" class="btn btn-primary">Сохранить</button>

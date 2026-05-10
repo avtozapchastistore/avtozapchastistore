@@ -10,7 +10,7 @@ $id = (int)$_GET['id'];
 
 // Получаем товар
 $stmt = $conn->prepare("
-    SELECT p.id, p.name, p.price, p.short_description, p.category_id,
+    SELECT p.id, p.name, p.price, p.short_description, p.category_id, p.image,
            c.name AS category_name
     FROM products p
     JOIN categories c ON p.category_id = c.id
@@ -36,7 +36,7 @@ $priceFormatted = $product ? number_format((float)$product['price'], 2, '.', '')
 $related = [];
 if ($product) {
     $rel = $conn->prepare("
-        SELECT p.id, p.name, p.price, p.short_description
+        SELECT p.id, p.name, p.price, p.short_description, p.image
         FROM products p
         WHERE p.category_id = ? AND p.id <> ?
         ORDER BY p.id DESC
@@ -100,9 +100,10 @@ if ($product) {
 
       <!-- Hero блок -->
       <section class="product-hero">
-        <!-- Медиа/изображение. Сейчас заглушка-блок, подставь реальное изображение когда появится поле -->
         <div class="product-media" aria-hidden="true">
-          <!-- Пример: <img src="uploads/products/<?php echo (int)$product['id']; ?>.jpg" alt="<?php echo htmlspecialchars($product['name']); ?>"> -->
+          <?php if (!empty($product['image'])): ?>
+            <img src="uploads/products/<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
+          <?php endif; ?>
         </div>
 
         <div class="product-info">
@@ -170,7 +171,11 @@ if ($product) {
               }
           ?>
             <article class="product-card">
-              <div class="thumb" aria-hidden="true"></div>
+              <div class="thumb" aria-hidden="true">
+                <?php if (!empty($it['image'])): ?>
+                  <img src="uploads/products/<?php echo htmlspecialchars($it['image']); ?>" alt="<?php echo htmlspecialchars($it['name']); ?>">
+                <?php endif; ?>
+              </div>
               <div class="info">
                 <h3 class="title"><a href="product.php?id=<?php echo (int)$it['id']; ?>"><?php echo htmlspecialchars($it['name']); ?></a></h3>
                 <?php if ($excerpt): ?><p class="excerpt"><?php echo $excerpt; ?></p><?php endif; ?>

@@ -20,7 +20,7 @@ $csrf = $_SESSION['csrf_token'];
 $id = (int)($_GET['id'] ?? 0);
 if ($id <= 0) { header("Location: index.php"); exit; }
 
-$st = $pdo->prepare("SELECT id, title, content, created_at FROM news WHERE id = ?");
+$st = $pdo->prepare("SELECT id, title, content, image, created_at FROM news WHERE id = ?");
 $st->execute([$id]);
 $news = $st->fetch(PDO::FETCH_ASSOC);
 if (!$news) { header("Location: index.php"); exit; }
@@ -32,11 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $title = trim($_POST['title'] ?? '');
         $content = trim($_POST['content'] ?? '');
+        $image = trim($_POST['image'] ?? '');
         if ($title === '' || $content === '') {
             $err = "Заполните заголовок и текст.";
         } else {
-            $st = $pdo->prepare("UPDATE news SET title = ?, content = ? WHERE id = ?");
-            if ($st->execute([$title, $content, $id])) {
+            $st = $pdo->prepare("UPDATE news SET title = ?, content = ?, image = ? WHERE id = ?");
+            if ($st->execute([$title, $content, $image, $id])) {
                 $ok = "Изменения сохранены.";
                 $news['title'] = $title;
                 $news['content'] = $content;
@@ -83,6 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <label>Текст новости</label>
       <textarea name="content" class="input" rows="10" required><?php echo htmlspecialchars($news['content']); ?></textarea>
+
+      <label>Изображение (URL или имя файла)</label>
+      <input type="text" name="image" class="input" placeholder="Например: news1.jpg"
+             value="<?php echo htmlspecialchars($news['image'] ?? ''); ?>">
 
       <div style="margin-top:12px;">
         <button type="submit" class="btn btn-primary">Сохранить</button>

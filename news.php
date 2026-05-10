@@ -25,6 +25,9 @@ require __DIR__ . '/header.php';
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     echo "<div class='news-item'>";
+                    if (!empty($row['image'])) {
+                        echo "<img src='uploads/news/" . htmlspecialchars($row['image']) . "' alt='" . htmlspecialchars($row['title']) . "' style='max-width:100%; border-radius:8px; margin-bottom:12px;'>";
+                    }
                     echo "<h3>" . htmlspecialchars($row['title']) . "</h3>";
                     echo "<p class='news-date'>" . date("d.m.Y H:i", strtotime($row['created_at'])) . "</p>";
                     echo "<p>" . nl2br(htmlspecialchars($row['content'])) . "</p>";

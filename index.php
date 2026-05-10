@@ -115,7 +115,7 @@ function safe_query(mysqli $conn, string $sql) {
         $where .= ($where ? " AND" : " WHERE") . " p.name LIKE '%$search%'";
       }
 
-      $sqlProd = "SELECT p.*, c.name AS category_name
+      $sqlProd = "SELECT p.id, p.name, p.price, p.short_description, p.category_id, p.image, c.name AS category_name
                   FROM products p
                   JOIN categories c ON p.category_id = c.id" . $where;
       $result = safe_query($conn, $sqlProd);
@@ -134,7 +134,11 @@ function safe_query(mysqli $conn, string $sql) {
           }
 
           echo "<article class='product-card'>
-                  <div class='thumb' aria-hidden='true'></div>
+                  <div class='thumb' aria-hidden='true'>";
+            if (!empty($row['image'])) {
+                echo "<img src='uploads/products/".htmlspecialchars($row['image'])."' alt='".htmlspecialchars($row['name'])."'>";
+            }
+            echo "</div>
                   <div class='info'>
                     <h3 class='title'><a href='product.php?id={$row['id']}'>".htmlspecialchars($row['name'])."</a></h3>
                     <div class='meta'>Категория: ".htmlspecialchars($row['category_name'])."</div>";

@@ -11,7 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $conn->real_escape_string($_POST['name']);
     $price = (float)$_POST['price'];
     $category_id = (int)$_POST['category_id'];
-    $sql = "INSERT INTO products (name, price, category_id) VALUES ('$name', $price, $category_id)";
+    $image = $conn->real_escape_string($_POST['image'] ?? '');
+    $sql = "INSERT INTO products (name, price, category_id, image) VALUES ('$name', $price, $category_id, '$image')";
     if ($conn->query($sql)) {
         header("Location: index.php");
         exit;
@@ -63,6 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <textarea name="short_description" maxlength="255" class="input" placeholder="Кратко о товаре"></textarea>
             </label>
 
+            <label for="image">Изображение (URL или имя файла):</label>
+            <input type="text" id="image" name="image" placeholder="Например: product1.jpg">
 
             <label for="category_id">Категория:</label>
             <select id="category_id" name="category_id" required>

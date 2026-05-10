@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $err = "Заполните заголовок и текст.";
         } else {
             $st = $pdo->prepare("INSERT INTO news (title, content) VALUES (?, ?)");
-            if ($st->execute([$title, $content])) {
+            if ($st->execute([$title, $content, $image])) {
                 header("Location: index.php"); exit;
             } else {
                 $err = "Не удалось добавить новость.";
@@ -70,6 +70,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <input type="text" id="title" name="title" required maxlength="255">
       <label for="content">Содержание:</label>
       <textarea id="content" name="content" rows="10" required></textarea>
+
+      <label for="image">Изображение (URL или имя файла):</label>
+      <input type="text" id="image" name="image" placeholder="Например: news1.jpg">
       <button type="submit" class="btn btn-primary">Добавить</button>
       <a href="index.php" class="btn btn-ghost" style="margin-left:10px;">Назад</a>
     </form>
