@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $customer_name    = trim($_POST['customer_name'] ?? '');
         $customer_address = trim($_POST['customer_address'] ?? '');
         $phone            = trim($_POST['phone'] ?? '');
-        $status           = trim($_POST['status'] ?? 'pending');
+        $status           = trim($_POST['status'] ?? $order['status']);
 
         // Кол-ва
         $qty = $_POST['qty'] ?? []; // массив: product_id => quantity
