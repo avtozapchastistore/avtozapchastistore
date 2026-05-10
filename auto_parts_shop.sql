@@ -59,7 +59,7 @@ CREATE TABLE `orders` (
   `phone` varchar(20) NOT NULL,
   `total` decimal(10,2) NOT NULL,
   `products` text NOT NULL,
-  `status` enum('pending','accepted') NOT NULL DEFAULT 'pending',
+  `status` enum('pending','accepted','cancelled') NOT NULL DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
