@@ -154,19 +154,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt && $stmt->num_rows > 0) {
           while ($row = $stmt->fetch_assoc()) {
             $stock = isset($row['stock']) ? (int)$row['stock'] : 0;
+            $id = (int)$row['id'];
+            $name = htmlspecialchars($row['name']);
+            $catName = htmlspecialchars($row['category_name']);
+            $csrfAttr = htmlspecialchars($csrf);
+            $confirmMsg = htmlspecialchars(addslashes($row['name']));
             echo "<tr>
-                    <td>{$row['id']}</td>
-                    <td>" . htmlspecialchars($row['name']) . "</td>
-                    <td>" . htmlspecialchars($row['category_name']) . "</td>
+                    <td>{$id}</td>
+                    <td>{$name}</td>
+                    <td>{$catName}</td>
                     <td>{$row['price']} руб.</td>
                     <td>{$stock}</td>
                     <td>
-                      <a href="edit_product.php?id=<?php echo (int)$row['id']; ?>" class="btn btn-ghost">Редактировать</a>
-                      <form method="POST" action="index.php" onsubmit="return confirm('Удалить товар: <?php echo htmlspecialchars(addslashes($row['name'])); ?> (ID <?php echo (int)$row['id']; ?>)?')">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf); ?>">
-                        <input type="hidden" name="product_id" value="<?php echo (int)$row['id']; ?>">
-                        <input type="hidden" name="action" value="delete">
-                        <button type="submit" class="btn btn-danger">Удалить</button>
+                      <a href='edit_product.php?id={$id}' class='btn btn-ghost'>Редактировать</a>
+                      <form method='POST' action='index.php' onsubmit=\"return confirm('Удалить товар: {$confirmMsg} (ID {$id})?')\">
+                        <input type='hidden' name='csrf_token' value='{$csrfAttr}'>
+                        <input type='hidden' name='product_id' value='{$id}'>
+                        <input type='hidden' name='action' value='delete'>
+                        <button type='submit' class='btn btn-danger'>Удалить</button>
                       </form>
                     </td>
                   </tr>";
