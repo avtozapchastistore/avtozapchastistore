@@ -63,8 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Добавить товар</title>
-    <link rel="stylesheet" href="/autozip/css/common.css">
-    <link rel="stylesheet" href="/autozip/css/admin_form.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/admin_form.css">
     <style>
         .notice { margin-bottom: 12px; padding: 10px 12px; border-radius: 10px; font-size: 14px; }
         .notice-err { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }

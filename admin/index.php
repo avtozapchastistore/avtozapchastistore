@@ -21,6 +21,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception("Недействительный CSRF-токен.");
         }
 
+        // ----- ТОВАРЫ -----
+        if (isset($_POST['product_id'])) {
+            $product_id = (int)$_POST['product_id'];
+            $action     = $_POST['action'] ?? '';
+            if ($product_id <= 0) throw new Exception("Недействительный ID товара.");
+
+            if ($action === 'delete') {
+                $stmt = $conn->prepare("DELETE FROM products WHERE id = ?");
+                $stmt->bind_param('i', $product_id);
+                $stmt->execute();
+            }
+        }
+
         // ----- ЗАКАЗЫ -----
         if (isset($_POST['order_id'])) {
             $order_id = (int)$_POST['order_id'];
@@ -147,7 +160,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td>" . htmlspecialchars($row['category_name']) . "</td>
                     <td>{$row['price']} руб.</td>
                     <td>{$stock}</td>
-                    <td><a href='edit_product.php?id={$row['id']}' class='btn btn-ghost'>Редактировать</a></td>
+                    <td>
+                      <a href='edit_product.php?id={$row['id']}' class='btn btn-ghost'>Редактировать</a>
+                      <form method='POST' action='index.php' onsubmit="return confirm('Удалить товар &laquo;".htmlspecialchars($row['name'])."&raquo; (#{$row['id']})?');">
+                        <input type='hidden' name='csrf_token' value='{$csrf}'>
+                        <input type='hidden' name='product_id' value='{$row['id']}'>
+                        <input type='hidden' name='action' value='delete'>
+                        <button type='submit' class='btn btn-danger'>Удалить</button>
+                      </form>
+                    </td>
                   </tr>";
           }
         } else {
