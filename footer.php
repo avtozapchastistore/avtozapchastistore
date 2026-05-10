@@ -1,6 +1,7 @@
-    </main>
-    <footer class="site-footer">
+<footer class="site-footer">
+    <div class="container">
         <p>© <?php echo date("Y"); ?> Магазин автозапчастей</p>
-    </footer>
+    </div>
+</footer>
 </body>
 </html>

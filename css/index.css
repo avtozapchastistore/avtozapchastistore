@@ -86,6 +86,35 @@
 .empty-title{ font-weight:700; font-size:18px; margin-top:8px; }
 .empty-text{ color:var(--muted); margin-top:4px; }
 
+/* ===== Отзывы ===== */
+.reviews { padding: 48px 0; background: #fafafa; }
+.reviews .section-head { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px; }
+.reviews-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
+.review-card { background:#fff; border:1px solid #eee; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:8px; }
+.review-name { font-weight:600; }
+.review-text { color:#333; line-height:1.45; }
+.review-meta { font-size:12px; color:#777; }
+.stars { font-size:14px; letter-spacing:1px; color:#f5a623; }
+.product-card .excerpt{margin:.25rem 0 .5rem;color:#444;line-height:1.35}
+
+/* ===== Модалка ===== */
+.modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.4); display:none; align-items:center; justify-content:center; padding:16px; z-index:1000; }
+.modal-backdrop:target { display:flex; }
+.modal-backdrop.active { display:flex; }
+.modal-backdrop:not(:target) { display:none !important; }
+.modal { width:100%; max-width:520px; background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.2); }
+.modal-header { padding:16px 20px; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between; }
+.modal-title { font-weight:700; }
+.modal-close { border:none; background:transparent; font-size:22px; line-height:1; cursor:pointer; text-decoration:none; }
+.modal-body { padding:20px; display:flex; flex-direction:column; gap:12px; }
+.modal-footer { padding:16px 20px; border-top:1px solid #eee; display:flex; gap:8px; justify-content:flex-end; }
+.textarea, .select { width:100%; border:1px solid #ddd; border-radius:10px; padding:10px 12px; font:inherit; }
+.textarea { min-height:110px; resize:vertical; }
+.btn-secondary { background:#f2f2f2; border:1px solid #e5e5e5; color:#333; border-radius:10px; padding:10px 14px; }
+.alert { padding:10px 12px; border-radius:10px; font-size:14px; }
+.alert-success { background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; }
+.alert-error { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }
+
 /* Адаптивные мелочи */
 @media (max-width:640px){
   .brand-name{ font-size:16px; }

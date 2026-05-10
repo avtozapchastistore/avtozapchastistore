@@ -153,6 +153,8 @@ function safe_query(mysqli $conn, string $sql) {
     </div>
   </section>
 
+</main>
+
 <div class="modal-backdrop" id="reviewModalBackdrop" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
     <div class="modal-header">
