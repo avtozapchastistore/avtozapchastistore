@@ -161,12 +161,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td>{$row['price']} руб.</td>
                     <td>{$stock}</td>
                     <td>
-                      <a href='edit_product.php?id={$row['id']}' class='btn btn-ghost'>Редактировать</a>
-                      <form method='POST' action='index.php' onsubmit="return confirm('Удалить товар &laquo;".htmlspecialchars($row['name'])."&raquo; (#{$row['id']})?');">
-                        <input type='hidden' name='csrf_token' value='{$csrf}'>
-                        <input type='hidden' name='product_id' value='{$row['id']}'>
-                        <input type='hidden' name='action' value='delete'>
-                        <button type='submit' class='btn btn-danger'>Удалить</button>
+                      <a href="edit_product.php?id=<?php echo (int)$row['id']; ?>" class="btn btn-ghost">Редактировать</a>
+                      <form method="POST" action="index.php" onsubmit="return confirm('Удалить товар: <?php echo htmlspecialchars(addslashes($row['name'])); ?> (ID <?php echo (int)$row['id']; ?>)?')">
+                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf); ?>">
+                        <input type="hidden" name="product_id" value="<?php echo (int)$row['id']; ?>">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
                       </form>
                     </td>
                   </tr>";
