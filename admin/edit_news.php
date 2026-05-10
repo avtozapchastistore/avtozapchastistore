@@ -25,24 +25,53 @@ $st->execute([$id]);
 $news = $st->fetch(PDO::FETCH_ASSOC);
 if (!$news) { header("Location: index.php"); exit; }
 
-$ok = ''; $err = '';
+$ok = '';
+$err = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $csrf) {
         $err = "Недействительный CSRF-токен.";
     } else {
         $title = trim($_POST['title'] ?? '');
         $content = trim($_POST['content'] ?? '');
-        $image = trim($_POST['image'] ?? '');
+        $image = $news['image'];
+
         if ($title === '' || $content === '') {
             $err = "Заполните заголовок и текст.";
         } else {
-            $st = $pdo->prepare("UPDATE news SET title = ?, content = ?, image = ? WHERE id = ?");
-            if ($st->execute([$title, $content, $image, $id])) {
-                $ok = "Изменения сохранены.";
-                $news['title'] = $title;
-                $news['content'] = $content;
-            } else {
-                $err = "Не удалось сохранить изменения.";
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                $mime = mime_content_type($_FILES['image']['tmp_name']);
+                if (!in_array($mime, $allowed)) {
+                    $err = 'Разрешены только изображения: JPEG, PNG, GIF, WEBP.';
+                } else {
+                    $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+                    $filename = uniqid('news_') . '.' . $ext;
+                    $upload_dir = __DIR__ . '/../uploads/news/';
+                    if (!is_dir($upload_dir)) {
+                        mkdir($upload_dir, 0755, true);
+                    }
+                    $dest = $upload_dir . $filename;
+                    if (move_uploaded_file($_FILES['image']['tmp_name'], $dest)) {
+                        if ($image && file_exists($upload_dir . $image)) {
+                            @unlink($upload_dir . $image);
+                        }
+                        $image = $filename;
+                    } else {
+                        $err = 'Не удалось сохранить изображение.';
+                    }
+                }
+            }
+
+            if (!$err) {
+                $st = $pdo->prepare("UPDATE news SET title = ?, content = ?, image = ? WHERE id = ?");
+                if ($st->execute([$title, $content, $image, $id])) {
+                    $ok = "Изменения сохранены.";
+                    $news['title'] = $title;
+                    $news['content'] = $content;
+                    $news['image'] = $image;
+                } else {
+                    $err = "Не удалось сохранить изменения.";
+                }
             }
         }
     }
@@ -56,7 +85,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/admin_form.css">
-  <style>.notice{margin-bottom:12px;padding:10px 12px;border-radius:10px}.ok{background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46}.err{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}</style>
+  <style>
+    .notice { margin-bottom: 12px; padding: 10px 12px; border-radius: 10px; }
+    .notice-ok { background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; }
+    .notice-err { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }
+    .admin-form textarea.input { min-height: 150px; resize: vertical; }
+    .image-preview { margin-top: 8px; max-width: 250px; }
+    .image-preview img { max-width: 100%; border-radius: 8px; }
+  </style>
 </head>
 <body>
 <header class="site-header">
@@ -73,10 +109,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="admin-form">
     <h2>Редактировать новость #<?php echo (int)$news['id']; ?></h2>
 
-    <?php if ($ok): ?><div class="notice ok"><?php echo htmlspecialchars($ok); ?></div><?php endif; ?>
-    <?php if ($err): ?><div class="notice err"><?php echo htmlspecialchars($err); ?></div><?php endif; ?>
+    <?php if ($ok): ?><div class="notice notice-ok"><?php echo htmlspecialchars($ok); ?></div><?php endif; ?>
+    <?php if ($err): ?><div class="notice notice-err"><?php echo htmlspecialchars($err); ?></div><?php endif; ?>
 
-    <form method="post" action="edit_news.php?id=<?php echo (int)$news['id']; ?>">
+    <form method="post" action="edit_news.php?id=<?php echo (int)$news['id']; ?>" enctype="multipart/form-data">
       <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf); ?>">
 
       <label>Заголовок</label>
@@ -85,9 +121,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <label>Текст новости</label>
       <textarea name="content" class="input" rows="10" required><?php echo htmlspecialchars($news['content']); ?></textarea>
 
-      <label>Изображение (URL или имя файла)</label>
-      <input type="text" name="image" class="input" placeholder="Например: news1.jpg"
-             value="<?php echo htmlspecialchars($news['image'] ?? ''); ?>">
+      <label>Изображение новости</label>
+      <input type="hidden" name="MAX_FILE_SIZE" value="5242880">
+      <input type="file" name="image" class="input" accept="image/jpeg,image/png,image/gif,image/webp">
+      <small style="color:#666;">JPEG, PNG, GIF, WEBP. Макс. 5 МБ.</small>
+
+      <?php if (!empty($news['image']) && file_exists(__DIR__ . '/../uploads/news/' . $news['image'])): ?>
+        <div class="image-preview">
+          <p style="margin:0 0 6px;font-size:13px;color:#666;">Текущее изображение:</p>
+          <img src="../uploads/news/<?php echo htmlspecialchars($news['image']); ?>" alt="Текущее изображение">
+        </div>
+      <?php endif; ?>
 
       <div style="margin-top:12px;">
         <button type="submit" class="btn btn-primary">Сохранить</button>
